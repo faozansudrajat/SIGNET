@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import {
   Building2,
   Eye,
-  Server,
+
   LogOut,
   Menu,
   X,

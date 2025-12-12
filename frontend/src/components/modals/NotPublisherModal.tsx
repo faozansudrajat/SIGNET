@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Mail, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NotPublisherModalProps {

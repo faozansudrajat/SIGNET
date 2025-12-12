@@ -4,7 +4,8 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
 import { GlowButton } from "@/components/ui/glow-button";
-import { Loader2, CheckCircle2, ShieldCheck, ArrowRight, Wallet, AlertCircle } from "lucide-react";
+import { CheckCircle2, ShieldCheck, ArrowRight, Wallet, AlertCircle } from "lucide-react";
+
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import LiquidEther from "@/components/LiquidEther";
@@ -17,7 +18,7 @@ export default function RegisterPublisher() {
     const { address, isConnected } = useAccount();
     const { open } = useAppKit();
     const [scrolled, setScrolled] = useState(false);
-    const [isRegistering, setIsRegistering] = useState(false);
+
 
     // Contract Read: Check if user is already authorized
     const { data: isAuthorized, refetch: refetchAuth } = useReadContract({
@@ -49,7 +50,7 @@ export default function RegisterPublisher() {
     useEffect(() => {
         if (isConfirmed) {
             refetchAuth();
-            setIsRegistering(false);
+
         }
     }, [isConfirmed, refetchAuth]);
 
@@ -59,7 +60,7 @@ export default function RegisterPublisher() {
             return;
         }
 
-        setIsRegistering(true);
+
         writeContract({
             address: BLOCKCHAIN_CONFIG.NFT_CONTRACT_ADDRESS as `0x${string}`,
             abi: SignetNFT_ABI,

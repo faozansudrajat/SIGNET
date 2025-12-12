@@ -10,14 +10,13 @@ import LandingPage from "@/pages/landing";
 import DashboardHome from "@/pages/dashboard-home";
 import RegisterContent from "@/pages/register-content";
 import MyContents from "@/pages/my-contents";
-import APIUsage from "@/pages/api-usage";
-import APIDocs from "@/pages/api-docs";
+
 import VerifyContent from "@/pages/verify-content";
 import Activity from "@/pages/activity";
 import RegisterPublisher from "@/pages/register-publisher";
 import ManagePublishers from "@/pages/admin";
 import ContentReview from "@/pages/admin/content-review";
-import SystemMonitor from "@/pages/admin/system-monitor";
+
 import NotFound from "@/pages/not-found";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/layout/Layout";

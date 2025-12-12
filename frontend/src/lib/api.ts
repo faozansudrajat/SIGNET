@@ -185,7 +185,7 @@ export const getAllContents = async () => {
     const mappedContents = backendData.map(mapBackendToFrontend);
 
     // Sort by timestamp (newest first) - using generated timestamp
-    mappedContents.sort((a, b) => b.timestamp - a.timestamp);
+    mappedContents.sort((a: any, b: any) => b.timestamp - a.timestamp);
 
     return {
       contents: mappedContents,
@@ -215,7 +215,7 @@ export const getMyContents = async (ownerAddress?: string) => {
 
     // Map to frontend format and sort by timestamp (newest first)
     const mappedContents = filteredData.map(mapBackendToFrontend);
-    mappedContents.sort((a, b) => b.timestamp - a.timestamp);
+    mappedContents.sort((a: any, b: any) => b.timestamp - a.timestamp);
 
     return mappedContents;
   } catch (error) {
