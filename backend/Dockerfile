@@ -45,9 +45,9 @@ RUN mkdir -p /app/temp_files
 # Expose port
 EXPOSE 8000
 
-# Health check
+# Health check (use PORT env var or default to 8000)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/list')" || exit 1
+    CMD sh -c "python -c \"import requests; import os; port=os.getenv('PORT', '8000'); requests.get(f'http://localhost:{port}/list')\"" || exit 1
 
-# Run uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run uvicorn with PORT from environment variable (Railway provides this)
+CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
