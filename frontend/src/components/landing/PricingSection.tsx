@@ -7,7 +7,7 @@ import {
     ArrowRight,
     RotateCcw,
     Info,
-    ShieldCheck
+
 } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";

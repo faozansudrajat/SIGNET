@@ -4,8 +4,7 @@ import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import {
   Fingerprint,
   Lock,
-  Zap,
-  ShieldCheck,
+
   Activity,
   Search,
   X,
