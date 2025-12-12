@@ -5,24 +5,24 @@ import { Plus, Minus, HelpCircle } from "lucide-react";
 
 const FAQ_ITEMS = [
     {
-        q: "What is perceptual hashing?",
-        a: "A hashing technique that detects visually similar content by generating a unique digital fingerprint based on the visual features of an image or video, rather than its file data. This allows SIGNET to identify modified or resized versions of the same content.",
+        q: "Do I need admin approval to register content?",
+        a: "No. In the spirit of Web3, our smart contract is permissionless. You can use the 'Self-Service Registration' feature to whitelist your wallet instantly and start minting IP Assets on Story Protocol without waiting for centralized approval.",
     },
     {
-        q: "Why blockchain?",
-        a: "Once registered as IP Assets on Story Protocol, fingerprints cannot be modified, deleted, or tampered with, providing an immutable and verifiable record of authenticity. Story Protocol's ecosystem provides IP Asset registration and licensing capabilities with high speed and low costs.",
+        q: "What is the difference between pHash and SHA-256?",
+        a: "SHA-256 breaks if a single pixel changes. Our AI Perceptual Hashing (pHash) creates a visual fingerprint that survives resizing, compression, and format changes, allowing SIGNET to detect 'visually similar' stolen content even if the file data is different.",
     },
     {
-        q: "Who is SIGNET for?",
-        a: "SIGNET is designed for media outlets, enterprises, governments, legal investigators, and content creators who need to verify the authenticity of digital assets and protect their intellectual property.",
+        q: "What legal protection do I get?",
+        a: "Every registered asset automatically gets a 'Non-Commercial Social Media' Programmable IP License (PIL) attached via Story Protocol. Additionally, our system generates a cryptographically signed PDF Evidence Report that includes the on-chain transaction hash for DMCA takedowns.",
     },
     {
-        q: "Is verification public?",
-        a: "Yes, the verification portal is open to the public, allowing anyone to check content authenticity against our blockchain records instantly without needing an account.",
+        q: "Is the verification data public?",
+        a: "Yes. The SIGNET Registry is built on the Story Protocol Aeneid Testnet. Anyone can query our public API or verify the 'Proof-of-Existence' directly on the blockchain using the IP ID or Transaction Hash.",
     },
     {
-        q: "How do I integrate the API?",
-        a: "Our API is RESTful and easy to integrate. You can generate an API key from your dashboard and start sending verification requests immediately. Check our documentation for code examples in Python, Node.js, and Go.",
+        q: "Can I integrate SIGNET into my platform?",
+        a: "Absolutely. We provide a REST API for high-volume content platforms. You can send media files to our /verify endpoint to check for deepfakes or copyright infringements in real-time before they are published.",
     },
 ];
 
@@ -53,7 +53,7 @@ export const FAQSection = () => {
                         Frequently Asked Questions
                     </h2>
                     <p className="text-muted-foreground text-lg">
-                        Everything you need to know about SIGNET.
+                        Technical details about our Forensic AI & Blockchain stack.
                     </p>
                 </motion.div>
 
@@ -68,8 +68,8 @@ export const FAQSection = () => {
                         >
                             <GlassCard
                                 className={`group transition-all duration-300 ${openIndex === i
-                                        ? "bg-white/[0.08] dark:bg-white/[0.05] border-blue-500/20 dark:border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.1)] dark:shadow-[0_0_30px_rgba(59,130,246,0.1)]"
-                                        : "hover:bg-white/[0.08] dark:hover:bg-white/[0.04] hover:border-white/[0.15] dark:hover:border-white/[0.1]"
+                                    ? "bg-white/[0.08] dark:bg-white/[0.05] border-blue-500/20 dark:border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.1)] dark:shadow-[0_0_30px_rgba(59,130,246,0.1)]"
+                                    : "hover:bg-white/[0.08] dark:hover:bg-white/[0.04] hover:border-white/[0.15] dark:hover:border-white/[0.1]"
                                     }`}
                             >
                                 <button
