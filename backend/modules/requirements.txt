@@ -1,0 +1,16 @@
+web3==6.20.1
+python-dotenv>=1.0.0
+fastapi
+uvicorn
+requests
+# --- Tambahan untuk Media & PDF ---
+opencv-python-headless
+imagehash
+Pillow
+fpdf
+python-multipart
+# --- Telegram ---
+python-telegram-bot==20.0
+# --- Database ---
+sqlalchemy
+psycopg2-binary
