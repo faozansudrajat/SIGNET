@@ -1,0 +1,62 @@
+# Exclude frontend dan contract folders
+frontend/
+contract/
+
+# Python (untuk backend)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+logs/
+
+# Temporary files (dari backend)
+backend/temp_*
+backend/scan_*
+backend/evidence_*.pdf
+*.tmp
+
+# Test files
+backend/test_*.py
+backend/*_test.py
+
+# Documentation (keep backend docs jika diperlukan)
+README.md
+frontend/**/*.md
+contract/**/*.md
+
+# Docker files (tidak perlu di-copy)
+backend/docker-compose.yml
+backend/.dockerignore

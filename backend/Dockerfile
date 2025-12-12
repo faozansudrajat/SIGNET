@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy requirements dan install dependencies
-COPY modules/requirements.txt .
+# Path relatif terhadap root monorepo (backend/modules/requirements.txt)
+COPY backend/modules/requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 # Production stage
@@ -35,8 +36,8 @@ COPY --from=builder /root/.local /root/.local
 # Set working directory
 WORKDIR /app
 
-# Copy application code
-COPY . .
+# Copy application code dari backend folder
+COPY backend/ .
 
 # Make sure scripts in .local are usable
 ENV PATH=/root/.local/bin:$PATH

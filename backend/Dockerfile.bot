@@ -11,12 +11,13 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy requirements dan install
-COPY modules/requirements.txt .
+# Path relatif terhadap root monorepo
+COPY backend/modules/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY bot.py .
-COPY modules/ ./modules/
+# Copy application code dari backend folder
+COPY backend/bot.py .
+COPY backend/modules/ ./modules/
 
 # Make sure scripts are usable
 ENV PYTHONPATH=/app
