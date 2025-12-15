@@ -6,8 +6,7 @@ import {
     Users,
     ArrowRight,
     RotateCcw,
-    Info,
-
+    Info
 } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
@@ -195,67 +194,70 @@ const FlipCard = ({ plan, delay }: FlipCardProps) => {
 };
 
 export const PricingSection = ({ onConnect }: PricingSectionProps) => {
-    // Data paket disesuaikan dengan fitur Backend Story Protocol & SignetNFT
     const plans = [
         {
-            name: "STARTER", // Diganti dari HACKATHON menjadi STARTER
-            badge: "Free Access",
+            name: "STARTER",
+            badge: "Live Now",
             status: "Available Now",
-            description: "Full access to Story Protocol IP Registration & Deepfake Scanning.",
+            description: "Essential tools for content creators and journalists.",
             price: "Free",
             period: "Forever",
             icon: Users,
             features: [
-                "Story Protocol Aeneid Integration", // Fitur config.py
-                "Smart Contract Minting (ERC-721)", // Fitur SignetNFT.sol
-                "AI Deepfake Detection (pHash)",    // Fitur signet_core.py
-                "Automated Takedown PDF"            // Fitur generate_pdf
+                "Content Registration & Hashing",
+                "Lisk Blockchain Storage",
+                "Unlimited Verification",
+                "Community Support"
             ],
             details: [
-                "Self-Service Publisher Registration", // Fitur registerAsPublisher
-                "Mint IP Asset on Story Protocol",
-                "Automatic Perceptual Hashing (pHash)",
-                "Store Metadata on IPFS (Pinata)",
-                "Real-time Duplicate Hash Prevention", // Fitur isHashRegistered
-                "Non-Commercial License Attachment",
-                "Deepfake Similarity Scanning",
-                "Generate Legal Evidence PDF",
-                "Telegram Bot Integration",
-                "Public Verification API Access"
+                "✅ Upload and register unlimited content",
+                "✅ Automatic perceptual hashing (pHash)",
+                "✅ Store fingerprints on Lisk L2 blockchain",
+                "✅ Public verification portal access",
+                "✅ Real-time verification results",
+                "✅ Email notifications for submissions",
+                "✅ Community Discord support",
+                "✅ API access for basic integrations",
+                "✅ Mobile-responsive dashboard",
+                "✅ Export verification reports (PDF)"
             ],
-            cta: "Connect Wallet",
+            cta: "Start Verifying",
             action: onConnect,
             highlight: true,
             color: "blue"
         },
         {
             name: "ENTERPRISE",
-            badge: "Commercial",
+            badge: "Coming Soon",
             status: "Contact Sales",
-            description: "For organizations requiring commercial licensing modules & high throughput.",
+            description: "Custom solutions for large-scale organizations.",
             price: "Custom",
             period: "Contact",
             icon: Building2,
             features: [
-                "Commercial Licensing Modules", // Fitur Story Protocol Licensing
-                "Dedicated RPC Nodes",
-                "Batch Minting API",
-                "24/7 Dispute Resolution"
+                "Unlimited Scale & Throughput",
+                "Dedicated Blockchain Nodes",
+                "On-Premise Deployment",
+                "24/7 Dedicated Support"
             ],
             details: [
-                "Everything in Starter plan",
-                "Commercial Use License (PIL)",
-                "Royalty Revenue Sharing",
-                "High-Frequency API Rate Limits",
-                "Custom Branding on Evidence PDF",
-                "Dedicated Account Manager",
-                "Priority Blockchain Transaction",
-                "Custom Smart Contract Logic",
-                "Multi-Signature Wallet Support",
-                "Enterprise SLA & Uptime"
+                "✅ Everything in Starter plan",
+                "✅ Unlimited content uploads and verifications",
+                "✅ Dedicated blockchain infrastructure",
+                "✅ Custom SLA guarantees (99.9% uptime)",
+                "✅ On-premise or private cloud deployment",
+                "✅ Advanced API with webhooks",
+                "✅ Custom integrations and workflows",
+                "✅ White-label solution available",
+                "✅ Priority feature development",
+                "✅ Dedicated account manager",
+                "✅ 24/7 phone & email support",
+                "✅ Custom compliance and audit reports",
+                "✅ Training and onboarding sessions",
+                "✅ Custom retention policies"
             ],
             cta: "Contact Sales",
-            action: () => window.open("mailto:sales@signet.com?subject=Enterprise%20Inquiry", "_blank"),
+            action: () => window.open("mailto:sales@signet.com?subject=Enterprise%20Plan%20Inquiry", "_blank"),
             highlight: false,
             color: "rose"
         }
@@ -272,10 +274,10 @@ export const PricingSection = ({ onConnect }: PricingSectionProps) => {
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
-                        Protected on Story Protocol
+                        Simple, Transparent Pricing
                     </h2>
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        Secure your intellectual property with Proof-of-Existence and programmable IP licensing.
+                        Pricing is transparent and simple. No hidden fees or contracts.
                     </p>
                 </motion.div>
 
@@ -294,7 +296,7 @@ export const PricingSection = ({ onConnect }: PricingSectionProps) => {
                 >
                     <Link href="/contact">
                         <span className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group text-sm cursor-pointer">
-                            Need custom integration? Contact us
+                            Have more questions? Contact us
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </span>
                     </Link>

@@ -14,9 +14,12 @@ import {
   Image as ImageIcon,
   Video,
   Loader2,
+  Flag,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { GlowButton } from "@/components/ui/glow-button";
+import { reportInfringement } from "@/lib/api";
 
 type VerificationResult = {
   status: "duplicate-detected" | "manipulation-detected" | "unverified";
@@ -54,6 +57,7 @@ type VerificationResult = {
 
 type VerifyResultProps = {
   result: VerificationResult;
+  scamFilename?: string; // Filename of the file that was verified (the potential scam)
 };
 
 const formatAddress = (address: string) => {
@@ -69,16 +73,37 @@ const toGatewayUrl = (ipfsUri: string): string => {
   return ipfsUri.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
 };
 
-export function VerifyResult({ result }: VerifyResultProps) {
+export function VerifyResult({ result, scamFilename }: VerifyResultProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [isReporting, setIsReporting] = useState(false);
 
   const handleCopy = async (text: string, id: string) => {
     await navigator.clipboard.writeText(text);
     setCopied(id);
     setTimeout(() => setCopied(null), 2000);
+  };
+
+  const handleReport = async () => {
+    if (!result.blockchainProof?.contractId || !scamFilename) {
+      return;
+    }
+
+    setIsReporting(true);
+    try {
+      await reportInfringement(
+        scamFilename,
+        result.blockchainProof.contractId,
+        result.similarity
+      );
+    } catch (error: any) {
+      console.error("Error reporting infringement:", error);
+      alert(`Failed to generate report: ${error.message || "Unknown error"}`);
+    } finally {
+      setIsReporting(false);
+    }
   };
 
   // Fetch preview from IPFS metadata
@@ -616,6 +641,29 @@ export function VerifyResult({ result }: VerifyResultProps) {
               </div>
             </div>
           )}
+
+          {/* Report Button - Only show when match is found */}
+          {(result.status === "duplicate-detected" ||
+            result.status === "manipulation-detected") &&
+            result.blockchainProof?.contractId && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex justify-center pt-4"
+              >
+                <GlowButton
+                  variant="danger"
+                  onClick={handleReport}
+                  loading={isReporting}
+                  disabled={isReporting || !scamFilename}
+                  className="shadow-[0_0_30px_rgba(239,68,68,0.25)]"
+                >
+                  <Flag className="w-5 h-5 mr-2" />
+                  {isReporting ? "Generating Report..." : "Generate Takedown Report"}
+                </GlowButton>
+              </motion.div>
+            )}
 
           {/* Security Note */}
           <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-400 dark:border-blue-500/30">

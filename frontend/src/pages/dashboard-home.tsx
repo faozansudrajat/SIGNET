@@ -66,23 +66,23 @@ export default function DashboardHome() {
   // Filter recent contents by connected wallet address
   const myRecentContents = address
     ? contents
-        .filter((c: any) => {
-          const contentOwner = c.owner || c.publisher || "";
-          return contentOwner.toLowerCase() === address.toLowerCase();
-        })
-        .slice(0, 5)
+      .filter((c: any) => {
+        const contentOwner = c.owner || c.publisher || "";
+        return contentOwner.toLowerCase() === address.toLowerCase();
+      })
+      .slice(0, 3)
     : [];
 
   return (
     <>
       <motion.header
-        className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8"
+        className="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 mb-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 dark:from-blue-400 via-blue-400 dark:via-purple-400 to-purple-400 dark:to-purple-300 bg-clip-text text-transparent">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 dark:from-blue-400 via-blue-400 dark:via-purple-400 to-purple-400 dark:to-purple-300 bg-clip-text text-transparent">
             Dashboard Overview
           </h2>
           <p className="text-muted-foreground mt-1">
@@ -118,7 +118,7 @@ export default function DashboardHome() {
       </motion.header>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -129,13 +129,13 @@ export default function DashboardHome() {
               <Database className="w-24 h-24" />
             </div>
             <div className="relative z-10">
-              <div className="p-3 w-fit rounded-xl bg-blue-500/[0.15] border border-blue-500/[0.2] text-blue-400 mb-4">
-                <Database className="w-6 h-6" />
+              <div className="p-2 w-fit rounded-lg bg-blue-500/[0.15] border border-blue-500/[0.2] text-blue-400 mb-2">
+                <Database className="w-4 h-4" />
               </div>
               <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">
                 Total Registered
               </p>
-              <h3 className="text-4xl font-bold text-foreground mt-1">
+              <h3 className="text-2xl font-bold text-foreground mt-1">
                 {isLoading ? (
                   <Loader2 className="w-8 h-8 animate-spin" />
                 ) : (
@@ -160,13 +160,13 @@ export default function DashboardHome() {
               <ShieldCheck className="w-24 h-24" />
             </div>
             <div className="relative z-10">
-              <div className="p-3 w-fit rounded-xl bg-purple-500/[0.15] border border-purple-500/[0.2] text-purple-400 mb-4">
-                <ShieldCheck className="w-6 h-6" />
+              <div className="p-2 w-fit rounded-lg bg-purple-500/[0.15] border border-purple-500/[0.2] text-purple-400 mb-2">
+                <ShieldCheck className="w-4 h-4" />
               </div>
               <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">
                 Publishers
               </p>
-              <h3 className="text-4xl font-bold text-foreground mt-1">
+              <h3 className="text-2xl font-bold text-foreground mt-1">
                 {isLoading ? (
                   <Loader2 className="w-8 h-8 animate-spin" />
                 ) : (
@@ -195,13 +195,13 @@ export default function DashboardHome() {
               <Activity className="w-24 h-24" />
             </div>
             <div className="relative z-10">
-              <div className="p-3 w-fit rounded-xl bg-orange-500/[0.15] border border-orange-500/[0.2] text-orange-400 mb-4">
-                <Activity className="w-6 h-6" />
+              <div className="p-2 w-fit rounded-lg bg-orange-500/[0.15] border border-orange-500/[0.2] text-orange-400 mb-2">
+                <Activity className="w-4 h-4" />
               </div>
               <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">
                 Recent Contents
               </p>
-              <h3 className="text-4xl font-bold text-foreground mt-1">
+              <h3 className="text-2xl font-bold text-foreground mt-1">
                 {isLoading ? (
                   <Loader2 className="w-8 h-8 animate-spin" />
                 ) : (
@@ -223,9 +223,9 @@ export default function DashboardHome() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <GlassCard className="mt-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-foreground">
+        <GlassCard className="mt-4 p-4">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-lg font-semibold text-foreground">
               Recent Contents
             </h3>
             <a
@@ -274,25 +274,24 @@ export default function DashboardHome() {
                     <th className="pb-4 font-medium text-right">Time</th>
                   </tr>
                 </thead>
-                <tbody className="text-sm">
+                <tbody className="text-xs">
                   {myRecentContents.map((content: any, i: number) => (
                     <tr
                       key={content.id || i}
                       className="group hover:bg-white/[0.03] dark:hover:bg-white/[0.03] transition-colors border-b border-white/[0.08] dark:border-white/[0.08] last:border-0"
                     >
-                      <td className="py-4 font-medium text-foreground group-hover:text-foreground">
+                      <td className="py-2 font-medium text-foreground group-hover:text-foreground truncate max-w-[150px]">
                         {content.filename ||
                           content.name ||
                           content.title ||
                           "Untitled"}
                       </td>
-                      <td className="py-4">
+                      <td className="py-2">
                         <a
-                          href={`https://aeneid.storyscan.xyz/tx/${
-                            content.txhash?.startsWith("0x")
+                          href={`https://aeneid.storyscan.xyz/tx/${content.txhash?.startsWith("0x")
                               ? content.txhash
                               : `0x${content.txhash}`
-                          }`}
+                            }`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="font-mono text-blue-400/80 hover:text-blue-400 transition-colors"
@@ -300,16 +299,15 @@ export default function DashboardHome() {
                           {formatTxHash(content.txhash)}
                         </a>
                       </td>
-                      <td className="py-4">
+                      <td className="py-2">
                         {content.license?.status ? (
                           <span
-                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                              content.license.status === "ACTIVE"
+                            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${content.license.status === "ACTIVE"
                                 ? "bg-green-500/20 text-green-400 border border-green-500/30"
                                 : content.license.status === "FAILED"
-                                ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                                : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-                            }`}
+                                  ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                                  : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                              }`}
                           >
                             {content.license.status}
                           </span>
@@ -317,7 +315,7 @@ export default function DashboardHome() {
                           <span className="text-gray-500 text-xs">N/A</span>
                         )}
                       </td>
-                      <td className="py-4 text-muted-foreground text-right">
+                      <td className="py-2 text-muted-foreground text-right">
                         {content.timestamp
                           ? formatTimeAgo(content.timestamp)
                           : "N/A"}

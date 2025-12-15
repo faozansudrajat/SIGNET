@@ -108,12 +108,6 @@ export function LandingNavbar({
 
           <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-sm font-medium text-muted-foreground">
             <a
-              href="/"
-              className="hover:text-foreground transition-colors"
-            >
-              Home
-            </a>
-            <a
               href="#features"
               className="hover:text-foreground transition-colors"
             >

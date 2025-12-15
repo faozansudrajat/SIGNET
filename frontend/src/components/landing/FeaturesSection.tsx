@@ -4,14 +4,13 @@ import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import {
   Fingerprint,
   Lock,
-
+  Zap,
+  ShieldCheck,
   Activity,
   Search,
   X,
   ArrowRight,
   CheckCircle2,
-  FileText, // Ditambahkan untuk ikon Evidence PDF
-  Scale     // Ditambahkan untuk ikon Licensing
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,71 +18,71 @@ const FEATURES = [
   {
     id: "perceptual-hashing",
     icon: Fingerprint,
-    title: "AI Perceptual Hashing",
-    shortDesc: "Robust content fingerprinting using pHash algorithms.",
+    title: "Perceptual Hashing",
+    shortDesc: "Detect near-duplicate and manipulated media with AI.",
     longDesc:
-      "Unlike fragile SHA-256 hashes that break with a single pixel change, our Perceptual Hashing (pHash) technology generates a visual fingerprint that survives compression, resizing, and format changes. This allows the system to detect the 'same' image or video even after it has been manipulated or posted across different platforms.",
-    tags: ["Core Tech", "pHash", "Python OpenCV"],
+      "Unlike traditional cryptographic hashes (like SHA-256) that change completely with a single bit flip, our perceptual hashing (pHash) technology generates a fingerprint based on the visual content. This allows us to detect resized, cropped, or slightly color-graded versions of the same image, as well as identify malicious manipulations.",
+    tags: ["AI Analysis", "Content ID", "Robust"],
     gradient: "from-blue-500/20 to-cyan-500/20",
     border: "group-hover:border-blue-500/50",
     colSpan: "md:col-span-2",
   },
   {
-    id: "story-protocol",
+    id: "immutable-record",
     icon: Lock,
-    title: "Story Protocol IP Anchor",
-    shortDesc: "Assets are registered on the Aeneid Testnet.",
+    title: "Immutable Record",
+    shortDesc: "Every signature is permanently stored on Story Protocol.",
     longDesc:
-      "Every uploaded file is not just stored; it is minted as an NFT and automatically registered as an IP Asset on Story Protocol. This creates an immutable, on-chain provenance record that mathematically proves ownership and creation time, secured by the Story IP Asset Registry.",
-    tags: ["Blockchain", "Story Aeneid", "IP Asset"],
+      "We leverage Story Protocol's IP Asset Registry to create an unalterable timestamp and proof of existence for every piece of content. Once registered as an IP Asset with attached licensing, it cannot be changed, deleted, or censored, providing a mathematically verifiable chain of custody from the moment of creation.",
+    tags: ["Blockchain", "Story Protocol", "Security"],
     gradient: "from-purple-500/20 to-pink-500/20",
     border: "group-hover:border-purple-500/50",
     colSpan: "md:col-span-1",
   },
   {
-    id: "smart-licensing",
-    icon: Scale,
-    title: "Programmable Licensing",
-    shortDesc: "Auto-attach Non-Commercial terms (PIL).",
+    id: "verification-api",
+    icon: Zap,
+    title: "Verification API",
+    shortDesc: "Enterprise-grade API for bulk checking at scale.",
     longDesc:
-      "Forget complex legal paperwork. SIGNET automatically attaches the 'Non-Commercial Social Media' Programmable IP License (PIL) to every registered asset via the Story Licensing Module. This embeds usage rights directly into the blockchain transaction, making IP compliance readable by both humans and machines.",
-    tags: ["Licensing Module", "PIL", "Smart Contract"],
+      "Built for platforms that handle millions of uploads. Our high-performance REST and GraphQL APIs allow social media networks, news organizations, and marketplaces to automatically verify content authenticity in real-time before it's published to their users.",
+    tags: ["Developer Tools", "High Performance", "Scalable"],
     gradient: "from-amber-500/20 to-orange-500/20",
     border: "group-hover:border-amber-500/50",
     colSpan: "md:col-span-1",
   },
   {
-    id: "visual-similarity",
-    icon: Activity,
-    title: "Similarity & Deepfake Scan",
-    shortDesc: "Detect manipulated media via Hamming Distance.",
+    id: "publisher-identity",
+    icon: ShieldCheck,
+    title: "Publisher Identity",
+    shortDesc: "Verified publishers ensure content legitimacy.",
     longDesc:
-      "Our Verification Engine calculates the Hamming Distance between media fingerprints to identify deepfakes, unauthorized edits, and near-duplicate infringements. If a scanned file has a similarity score above 80%, the system flags it as a potential violation of a registered IP Asset.",
-    tags: ["Visual Forensics", "Hamming Distance", "Security"],
-    gradient: "from-red-500/20 to-rose-500/20",
-    border: "group-hover:border-red-500/50",
+      "Trust the source, not just the content. SIGNET links media signatures to verified on-chain identities (DID). This allows viewers to instantly see if a video actually came from the BBC, CNN, or a government official, effectively neutralizing impersonation attacks.",
+    tags: ["Identity", "DID", "Trust"],
+    gradient: "from-emerald-500/20 to-green-500/20",
+    border: "group-hover:border-emerald-500/50",
     colSpan: "md:col-span-2",
   },
   {
-    id: "evidence-generation",
-    icon: FileText,
-    title: "Legal Evidence PDF",
-    shortDesc: "Generate automated takedown reports instantly.",
+    id: "anti-deepfake",
+    icon: Activity,
+    title: "Anti-Deepfake Defense",
+    shortDesc: "Identify synthetic media instantly.",
     longDesc:
-      "When a violation is detected, SIGNET instantly generates a cryptographically signed PDF report. This document includes the original IP ID, the infringing content's visual similarity score, and the on-chain transaction hash—providing a ready-to-use evidence package for DMCA takedowns or legal disputes.",
-    tags: ["Legal Tech", "PDF Generator", "Automation"],
-    gradient: "from-emerald-500/20 to-green-500/20",
-    border: "group-hover:border-emerald-500/50",
+      "Our multi-layered defense system combines metadata analysis, provenance tracking, and AI detection models to flag potentially synthetic content. We provide a 'Trust Score' for every piece of media, giving users context about its origin and integrity.",
+    tags: ["AI Safety", "Deepfake Detection", "Protection"],
+    gradient: "from-red-500/20 to-rose-500/20",
+    border: "group-hover:border-red-500/50",
     colSpan: "md:col-span-1",
   },
   {
-    id: "permissionless-registry",
+    id: "public-portal",
     icon: Search,
-    title: "Permissionless Registry",
-    shortDesc: "Self-service registration for all creators.",
+    title: "Public Portal",
+    shortDesc: "Anyone can verify content without an account.",
     longDesc:
-      "We believe in open access. Our Smart Contract allows any user to call the 'registerAsPublisher' function, enabling a permissionless ecosystem where journalists, artists, and creators can secure their work without waiting for centralized approval.",
-    tags: ["Open Access", "Web3", "Decentralized"],
+      "Transparency is key to trust. Our public verification portal allows journalists, researchers, and the general public to upload a file or paste a URL to instantly check its history, origin, and authenticity status—no login or subscription required.",
+    tags: ["Open Access", "Transparency", "Free"],
     gradient: "from-indigo-500/20 to-violet-500/20",
     border: "group-hover:border-indigo-500/50",
     colSpan: "md:col-span-2",
@@ -176,7 +175,7 @@ export function FeaturesSection() {
             Powerful Features
           </h2>
           <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-            Powered by Story Protocol & Advanced Forensic AI.
+            Everything you need to secure digital trust.
           </p>
         </motion.div>
 
@@ -262,7 +261,7 @@ export function FeaturesSection() {
                         <div
                           className={cn(
                             "w-full md:w-2/5 p-8 flex items-center justify-center relative overflow-hidden",
-                            "bg-gradient-to-br",
+                            "bg-linear-to-br",
                             feature.gradient
                           )}
                         >
@@ -303,15 +302,15 @@ export function FeaturesSection() {
                             <ul className="grid grid-cols-1 gap-3">
                               <li className="flex items-center gap-3 text-muted-foreground">
                                 <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                <span>Story Protocol Integration</span>
+                                <span>Enterprise-grade security</span>
                               </li>
                               <li className="flex items-center gap-3 text-muted-foreground">
                                 <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                <span>On-Chain Provenance</span>
+                                <span>Real-time verification</span>
                               </li>
                               <li className="flex items-center gap-3 text-muted-foreground">
                                 <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                <span>Automated Legal Tech</span>
+                                <span>Seamless integration</span>
                               </li>
                             </ul>
                           </div>

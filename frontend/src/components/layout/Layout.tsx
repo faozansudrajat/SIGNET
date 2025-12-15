@@ -10,7 +10,6 @@ import {
   Copy,
   Wallet,
   FileCheck,
-
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -249,8 +248,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto min-h-screen relative z-10">
-        <div className="max-w-6xl mx-auto space-y-8 pb-10">{children}</div>
+      <main className="flex-1 p-4 md:p-6 overflow-y-auto min-h-screen relative z-10">
+        <div className="max-w-6xl mx-auto space-y-4 pb-6">{children}</div>
       </main>
     </div>
   );

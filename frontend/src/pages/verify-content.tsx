@@ -336,7 +336,7 @@ export default function VerifyContent() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <VerifyResult result={result} />
+                <VerifyResult result={result} scamFilename={file?.name || "unknown"} />
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
