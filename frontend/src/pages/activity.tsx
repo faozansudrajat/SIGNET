@@ -14,15 +14,12 @@ import {
 import {
   ExternalLink,
   Hash,
-  User,
   Clock,
   Loader2,
   Database,
   Search,
   X,
   ArrowLeft,
-  Copy,
-  Check,
 } from "lucide-react";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { GlowButton } from "@/components/ui/glow-button";
@@ -34,11 +31,7 @@ import { Input } from "@/components/ui/input";
 import signetLogoPurple from "@/assets/img/signet-logo-purple.svg";
 import signetLogoWhite from "@/assets/img/signet-logo-white.svg";
 
-// Helper to format address
-const formatAddress = (address: string) => {
-  if (!address) return "";
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-};
+
 
 // Helper to format TX Hash with 0x prefix
 const formatTxHash = (txHash: string) => {
@@ -73,7 +66,7 @@ const formatDate = (timestamp: number) => {
 export default function Activity() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [copiedHash, setCopiedHash] = useState<string | null>(null);
+
   const itemsPerPage = 10;
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -100,14 +93,14 @@ export default function Activity() {
 
   const allContents = apiResponse?.contents || [];
 
-  // Sort by timestamp (newest first) - memoized for performance
+  // Sort by timestamp (newest first - most recent registration on top)
   // Data sudah di-sort di api.ts, tapi kita sort lagi untuk memastikan
   const sortedContents = useMemo(
     () =>
       allContents
         ? [...allContents].sort(
-            (a: any, b: any) => (b.timestamp || 0) - (a.timestamp || 0)
-          )
+          (a: any, b: any) => (b.timestamp || 0) - (a.timestamp || 0)
+        )
         : [],
     [allContents]
   );
@@ -117,21 +110,21 @@ export default function Activity() {
     () =>
       searchQuery
         ? sortedContents.filter((item: any) => {
-            const query = searchQuery.toLowerCase();
-            const title = (item.title || "").toLowerCase();
-            const description = (item.description || "").toLowerCase();
-            const publisher = (item.publisher || "").toLowerCase();
-            const txhash = (item.txhash || "").toLowerCase();
-            const phash = (item.phash || "").toLowerCase();
+          const query = searchQuery.toLowerCase();
+          const title = (item.title || "").toLowerCase();
+          const description = (item.description || "").toLowerCase();
+          const publisher = (item.publisher || "").toLowerCase();
+          const txhash = (item.txhash || "").toLowerCase();
+          const phash = (item.phash || "").toLowerCase();
 
-            return (
-              title.includes(query) ||
-              description.includes(query) ||
-              publisher.includes(query) ||
-              txhash.includes(query) ||
-              phash.includes(query)
-            );
-          })
+          return (
+            title.includes(query) ||
+            description.includes(query) ||
+            publisher.includes(query) ||
+            txhash.includes(query) ||
+            phash.includes(query)
+          );
+        })
         : sortedContents,
     [searchQuery, sortedContents]
   );
@@ -141,16 +134,7 @@ export default function Activity() {
     setCurrentPage(1);
   }, [searchQuery]);
 
-  // Copy to clipboard function
-  const copyToClipboard = async (text: string, id: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedHash(id);
-      setTimeout(() => setCopiedHash(null), 2000);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
+
 
   const totalPages = Math.ceil(filteredContents.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -336,12 +320,11 @@ export default function Activity() {
                   <>
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="text-slate-900 dark:text-white border-b border-white/5 text-sm uppercase tracking-wider bg-white/[0.02]">
+                        <tr className="text-muted-foreground border-b border-black/5 dark:border-white/5 text-sm uppercase tracking-wider bg-black/[0.02] dark:bg-white/[0.02]">
                           <th className="p-6 font-medium">Name</th>
-                          <th className="p-6 font-medium">Publisher</th>
                           <th className="p-6 font-medium">IP ID</th>
                           <th className="p-6 font-medium">pHash</th>
-                          <th className="p-6 font-medium">TX Hash</th>
+                          <th className="p-6 font-medium">TX Hashes</th>
                           <th className="p-6 font-medium">License</th>
                           <th className="p-6 font-medium text-right">Time</th>
                         </tr>
@@ -350,10 +333,10 @@ export default function Activity() {
                         {currentContents.map((item: any, index: number) => (
                           <tr
                             key={item.id || index}
-                            className="group hover:bg-white/5 transition-colors border-b border-white/5 last:border-0"
+                            className="group hover:bg-black/[0.03] dark:hover:bg-white/5 transition-colors border-b border-black/5 dark:border-white/5 last:border-0"
                           >
                             <td className="p-6">
-                              <p className="font-medium text-slate-900 dark:text-white truncate max-w-md">
+                              <p className="font-medium text-foreground truncate max-w-md">
                                 {item.filename ||
                                   item.name ||
                                   item.title ||
@@ -361,20 +344,11 @@ export default function Activity() {
                               </p>
                             </td>
                             <td className="p-6">
-                              <div className="flex items-center gap-2">
-                                <User className="w-4 h-4 text-purple-400" />
-                                <span className="font-mono text-xs text-slate-900 dark:text-white">
-                                  {formatAddress(item.publisher)}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="p-6">
                               {item.ip_id ? (
-                                // Check if IP ID is a valid address (starts with 0x and has 42 chars) or is placeholder
                                 item.ip_id.startsWith("0x") &&
-                                item.ip_id.length === 42 ? (
+                                  item.ip_id.length === 42 ? (
                                   <a
-                                    href={`https://aeneid.storyscan.xyz/ip-asset/${item.ip_id}`}
+                                    href={`https://aeneid.storyscan.xyz/address/${item.ip_id}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors cursor-pointer group/ip font-mono text-xs"
@@ -395,67 +369,109 @@ export default function Activity() {
                                   </span>
                                 )
                               ) : (
-                                <span className="text-gray-500 text-xs">
-                                  N/A
-                                </span>
+                                <span className="text-gray-500 text-xs">N/A</span>
                               )}
                             </td>
                             <td className="p-6">
                               <div className="flex items-center gap-2">
                                 <Hash className="w-4 h-4 text-blue-400" />
-                                <button
-                                  onClick={() =>
-                                    copyToClipboard(
-                                      item.phash,
-                                      item.id || index
-                                    )
-                                  }
-                                  className="group/copy font-mono text-xs text-slate-900 dark:text-white bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded hover:bg-blue-500/20 transition-colors cursor-pointer flex items-center gap-2"
-                                  title="Click to copy full pHash"
+                                <div
+                                  className="font-mono text-xs text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded w-fit max-w-[120px] truncate"
+                                  title={item.phash || "N/A"}
                                 >
-                                  <span className="truncate max-w-[120px]">
-                                    {item.phash || "N/A"}
-                                  </span>
-                                  {copiedHash === (item.id || index) ? (
-                                    <Check className="w-3 h-3 text-green-400 flex-shrink-0" />
-                                  ) : (
-                                    <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity flex-shrink-0" />
-                                  )}
-                                </button>
+                                  {item.phash
+                                    ? `${item.phash.substring(0, 12)}...`
+                                    : "N/A"}
+                                </div>
                               </div>
                             </td>
                             <td className="p-6">
-                              <a
-                                href={`https://aeneid.storyscan.xyz/tx/${
-                                  item.txhash?.startsWith("0x")
-                                    ? item.txhash
-                                    : `0x${item.txhash}`
-                                }`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 text-slate-900 dark:text-white hover:text-blue-500 transition-colors cursor-pointer group/tx font-mono"
-                              >
-                                <span>{formatTxHash(item.txhash)}</span>
-                                <ExternalLink className="w-3 h-3 opacity-0 group-hover/tx:opacity-100 transition-opacity" />
-                              </a>
+                              <div className="flex flex-col gap-1">
+                                {item.tx_hash_mint && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-xs text-gray-500 w-16">
+                                      Mint:
+                                    </span>
+                                    <a
+                                      href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_mint}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-1 text-orange-400/80 hover:text-orange-400 transition-colors cursor-pointer group/mint font-mono text-xs"
+                                      title="NFT Mint Transaction"
+                                    >
+                                      <span className="truncate max-w-[80px]">
+                                        {formatTxHash(item.tx_hash_mint)}
+                                      </span>
+                                      <ExternalLink className="w-3 h-3 opacity-0 group-hover/mint:opacity-100 transition-opacity" />
+                                    </a>
+                                  </div>
+                                )}
+                                {item.tx_hash_register && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-xs text-gray-500 w-16">
+                                      Register:
+                                    </span>
+                                    <a
+                                      href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_register}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-1 text-blue-400/80 hover:text-blue-400 transition-colors cursor-pointer group/tx font-mono text-xs"
+                                      title="IP Asset Registration"
+                                    >
+                                      <span className="truncate max-w-[80px]">
+                                        {formatTxHash(item.tx_hash_register)}
+                                      </span>
+                                      <ExternalLink className="w-3 h-3 opacity-0 group-hover/tx:opacity-100 transition-opacity" />
+                                    </a>
+                                  </div>
+                                )}
+                                {item.tx_hash_license && (
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-xs text-gray-500 w-16">
+                                      License:
+                                    </span>
+                                    <a
+                                      href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_license}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-1 text-purple-400/80 hover:text-purple-400 transition-colors cursor-pointer group/license font-mono text-xs"
+                                      title="License Attachment"
+                                    >
+                                      <span className="truncate max-w-[80px]">
+                                        {formatTxHash(item.tx_hash_license)}
+                                      </span>
+                                      <ExternalLink className="w-3 h-3 opacity-0 group-hover/license:opacity-100 transition-opacity" />
+                                    </a>
+                                  </div>
+                                )}
+                                {!item.tx_hash_mint &&
+                                  !item.tx_hash_register &&
+                                  !item.tx_hash_license && (
+                                    <span className="text-gray-500 text-xs">N/A</span>
+                                  )}
+                              </div>
                             </td>
                             <td className="p-6">
                               {item.license?.status ? (
-                                <span
-                                  className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                                    item.license.status === "ACTIVE"
+                                <div className="flex flex-col gap-1">
+                                  <span
+                                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium w-fit ${item.license.status === "ACTIVE"
                                       ? "bg-green-500/20 text-green-400 border border-green-500/30"
                                       : item.license.status === "FAILED"
-                                      ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                                      : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-                                  }`}
-                                >
-                                  {item.license.status}
-                                </span>
+                                        ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                                        : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                                      }`}
+                                  >
+                                    {item.license.status}
+                                  </span>
+                                  {item.license.type && (
+                                    <span className="text-xs text-gray-500">
+                                      {item.license.type}
+                                    </span>
+                                  )}
+                                </div>
                               ) : (
-                                <span className="text-gray-500 text-xs">
-                                  N/A
-                                </span>
+                                <span className="text-gray-500 text-xs">N/A</span>
                               )}
                             </td>
                             <td className="p-6 text-right">

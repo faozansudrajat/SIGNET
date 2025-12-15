@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { GlassCard } from "@/components/ui/glass-card";
 import {
   Pagination,
@@ -9,34 +9,21 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
+
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  FileText,
-  MoreVertical,
-  ExternalLink,
-  Clock,
-  Hash,
   Loader2,
   Database,
+  Search,
+  X,
 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { getMyContents } from "@/lib/api";
+import { getAllContents } from "@/lib/api";
+import { Input } from "@/components/ui/input";
 
 // Helper to format address
 
-// Helper function to format TX Hash with 0x prefix
-const formatTxHash = (txHash: string) => {
-  if (!txHash) return "";
-  // Ensure 0x prefix
-  const hash = txHash.startsWith("0x") ? txHash : `0x${txHash}`;
-  return `${hash.slice(0, 8)}...${hash.slice(-6)}`;
-};
+
 
 // Helper to format time ago
 const formatTimeAgo = (timestamp: number) => {
@@ -60,184 +47,74 @@ const formatDate = (timestamp: number) => {
   });
 };
 
-// Helper to get file URL from IPFS metadata
-const getFileUrlFromMetadata = async (
-  metadataUri: string
-): Promise<string | null> => {
-  if (!metadataUri || !metadataUri.startsWith("ipfs://")) {
-    return null;
-  }
 
-  try {
-    const gatewayUrl = metadataUri.replace(
-      "ipfs://",
-      "https://gateway.pinata.cloud/ipfs/"
-    );
-    const response = await fetch(gatewayUrl);
-    if (!response.ok) return null;
 
-    const metadata = await response.json();
-    // Extract file URL from metadata.image (format: ipfs://CID)
-    const imageUri = metadata.image || metadata.video || metadata.animation_url;
-    if (imageUri) {
-      if (imageUri.startsWith("ipfs://")) {
-        return imageUri.replace(
-          "ipfs://",
-          "https://gateway.pinata.cloud/ipfs/"
-        );
-      }
-      return imageUri;
-    }
-    return null;
-  } catch (error) {
-    console.error("Error fetching file URL from metadata:", error);
-    return null;
-  }
-};
 
-// Helper to get description from IPFS metadata
-const getDescriptionFromMetadata = async (
-  metadataUri: string
-): Promise<string | null> => {
-  if (!metadataUri || !metadataUri.startsWith("ipfs://")) {
-    return null;
-  }
 
-  try {
-    const gatewayUrl = metadataUri.replace(
-      "ipfs://",
-      "https://gateway.pinata.cloud/ipfs/"
-    );
-    const response = await fetch(gatewayUrl);
-    if (!response.ok) return null;
 
-    const metadata = await response.json();
-    return metadata.description || null;
-  } catch (error) {
-    console.error("Error fetching description from metadata:", error);
-    return null;
-  }
-};
 
-// Component untuk menampilkan description dari IPFS metadata
-function IPFSDescription({ metadataUri }: { metadataUri: string }) {
-  const [description, setDescription] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchDescription = async () => {
-      setIsLoading(true);
-      const desc = await getDescriptionFromMetadata(metadataUri);
-      setDescription(desc);
-      setIsLoading(false);
-    };
-    if (metadataUri) {
-      fetchDescription();
-    } else {
-      setIsLoading(false);
-    }
-  }, [metadataUri]);
-
-  if (isLoading) {
-    return <span className="text-xs text-gray-500">Loading...</span>;
-  }
-
-  if (!description) {
-    return <span className="text-xs text-gray-500">No description</span>;
-  }
-
-  return (
-    <p className="text-xs text-gray-500 line-clamp-2 max-w-md">{description}</p>
-  );
-}
-
-// Hook untuk mendapatkan file URL dari IPFS metadata
-function useIPFSFileUrl(metadataUri: string) {
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchFileUrl = async () => {
-      setIsLoading(true);
-      const url = await getFileUrlFromMetadata(metadataUri);
-      setFileUrl(url);
-      setIsLoading(false);
-    };
-    if (metadataUri) {
-      fetchFileUrl();
-    } else {
-      setIsLoading(false);
-    }
-  }, [metadataUri]);
-
-  return { fileUrl, isLoading, metadataUri };
-}
-
-// Component untuk dropdown menu dengan opsi View File
-function IPFSFileMenu({ metadataUri }: { metadataUri?: string }) {
-  const { fileUrl, isLoading } = useIPFSFileUrl(metadataUri || "");
-
-  if (!metadataUri) {
-    return null;
-  }
-
-  const handleViewFile = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (fileUrl) {
-      window.open(fileUrl, "_blank", "noopener,noreferrer");
-    } else {
-      // Fallback ke metadata URL
-      const metadataUrl = metadataUri.replace(
-        "ipfs://",
-        "https://gateway.pinata.cloud/ipfs/"
-      );
-      window.open(metadataUrl, "_blank", "noopener,noreferrer");
-    }
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="p-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-full text-muted-foreground hover:text-foreground transition-colors">
-          <MoreVertical className="w-4 h-4" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={handleViewFile}
-          disabled={isLoading}
-          className="cursor-pointer"
-        >
-          <ExternalLink className="w-4 h-4 mr-2" />
-          {isLoading ? "Loading..." : "View File"}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
 
 export default function MyContents() {
-  const { address, isConnected } = useAccount();
+  useAccount();
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 10;
 
-  // Fetch user's contents
+  // Fetch ALL contents (same as /activity)
   const {
-    data: contents,
+    data: apiResponse,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["myContents", address],
-    queryFn: () => getMyContents(address as string),
-    enabled: !!address && isConnected,
+    queryKey: ["allContents"],
+    queryFn: () => getAllContents(),
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
+  const allContents = apiResponse?.contents || [];
+
+  // Sort by timestamp (newest first - most recent registration on top)
+  const sortedContents = useMemo(
+    () =>
+      allContents
+        ? [...allContents].sort(
+          (a: any, b: any) => (b.timestamp || 0) - (a.timestamp || 0)
+        )
+        : [],
+    [allContents]
+  );
+
+  // Filter contents based on search query
+  const filteredContents = useMemo(
+    () =>
+      searchQuery
+        ? sortedContents.filter((item: any) => {
+          const query = searchQuery.toLowerCase();
+          const filename = (item.filename || item.name || "").toLowerCase();
+          const ipId = (item.ip_id || "").toLowerCase();
+          const phash = (item.phash || "").toLowerCase();
+
+          return (
+            filename.includes(query) ||
+            ipId.includes(query) ||
+            phash.includes(query)
+          );
+        })
+        : sortedContents,
+    [searchQuery, sortedContents]
+  );
+
+  // Reset to page 1 when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   // Pagination logic
-  const totalPages = Math.ceil((contents?.length || 0) / itemsPerPage);
+  const totalPages = Math.ceil((filteredContents?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentContents = contents?.slice(startIndex, endIndex) || [];
+  const currentContents = filteredContents?.slice(startIndex, endIndex) || [];
 
   // Generate page numbers for pagination
   const getPageNumbers = () => {
@@ -273,25 +150,55 @@ export default function MyContents() {
 
   return (
     <>
-      <header className="mb-8 flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-foreground">My Contents</h2>
-          <p className="text-muted-foreground mt-1">
-            View all registered digital assets and their blockchain proofs.
-          </p>
-          {contents && contents.length > 0 && (
-            <p className="text-sm text-gray-500 mt-2">
-              Total:{" "}
-              <span className="text-blue-400 font-semibold">
-                {contents.length}
-              </span>{" "}
-              registered items
+      <header className="mb-8">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
+          {/* Title Section */}
+          <div>
+            <h2 className="text-3xl font-bold text-foreground">My Contents</h2>
+            <p className="text-muted-foreground mt-1">
+              View all registered digital assets and their blockchain proofs.
             </p>
-          )}
+            {allContents && allContents.length > 0 && (
+              <p className="text-sm text-gray-500 mt-2">
+                Total:{" "}
+                <span className="text-blue-400 font-semibold">
+                  {allContents.length}
+                </span>{" "}
+                registered items
+                {searchQuery && (
+                  <span className="text-gray-400">
+                    {" "}• Showing {filteredContents.length} results
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
+
+          {/* Search Input */}
+          <div className="relative w-full md:w-80">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+              <Search className="w-4 h-4" />
+            </div>
+            <Input
+              type="text"
+              placeholder="Search by name, IP ID, or pHash..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10 bg-black/20 dark:bg-white/5 border-black/10 dark:border-white/10 backdrop-blur-sm focus:border-blue-500/50 focus:ring-blue-500/20"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
-      <GlassCard className="p-0 overflow-hidden">
+      <GlassCard className="p-0 overflow-hidden backdrop-blur-xl bg-black/20 dark:bg-white/5 border border-black/10 dark:border-white/10">
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
@@ -304,7 +211,7 @@ export default function MyContents() {
                 {(error as Error).message}
               </p>
             </div>
-          ) : !contents || contents.length === 0 ? (
+          ) : !allContents || allContents.length === 0 ? (
             <div className="text-center py-20 text-gray-500">
               <Database className="w-16 h-16 mx-auto mb-4 opacity-30" />
               <p className="text-lg font-medium">No content registered yet</p>
@@ -320,199 +227,128 @@ export default function MyContents() {
             </div>
           ) : (
             <>
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse table-fixed">
                 <thead>
-                  <tr className="text-muted-foreground border-b border-black/5 dark:border-white/5 text-sm uppercase tracking-wider bg-black/[0.02] dark:bg-white/[0.02]">
-                    <th className="p-6 font-medium">Name</th>
-                    <th className="p-6 font-medium">Description</th>
-                    <th className="p-6 font-medium">IP ID</th>
-                    <th className="p-6 font-medium">pHash</th>
-                    <th className="p-6 font-medium">TX Hashes</th>
-                    <th className="p-6 font-medium">License</th>
-                    <th className="p-6 font-medium text-right">Time</th>
-                    <th className="p-6 font-medium w-10"></th>
+                  <tr className="text-muted-foreground border-b border-black/5 dark:border-white/5 text-xs uppercase tracking-wider bg-black/[0.02] dark:bg-white/[0.02]">
+                    <th className="p-3 font-medium w-[25%]">Name</th>
+                    <th className="p-3 font-medium w-[18%]">IP ID</th>
+                    <th className="p-3 font-medium w-[15%]">pHash</th>
+                    <th className="p-3 font-medium w-[20%]">TX</th>
+                    <th className="p-3 font-medium w-[10%]">License</th>
+                    <th className="p-3 font-medium text-right w-[12%]">Time</th>
                   </tr>
                 </thead>
-                <tbody className="text-sm">
+                <tbody className="text-xs">
                   {currentContents.map((item: any, index: number) => (
                     <tr
                       key={item.ip_id || item.phash || index}
                       className="group hover:bg-black/[0.03] dark:hover:bg-white/5 transition-colors border-b border-black/5 dark:border-white/5 last:border-0"
                     >
-                      <td className="p-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/30">
-                            <FileText className="w-5 h-5 text-blue-400" />
-                          </div>
-                          <p className="font-medium text-foreground">
-                            {item.filename ||
-                              item.name ||
-                              item.ip_id ||
-                              "Untitled"}
-                          </p>
-                        </div>
+                      {/* Name */}
+                      <td className="p-3">
+                        <p className="font-medium text-foreground truncate" title={item.filename || item.name || item.ip_id || "Untitled"}>
+                          {item.filename || item.name || item.ip_id || "Untitled"}
+                        </p>
                       </td>
-                      <td className="p-6">
-                        {item.ipfs_metadata ? (
-                          <IPFSDescription metadataUri={item.ipfs_metadata} />
-                        ) : (
-                          <span className="text-xs text-gray-500">
-                            No description
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-6">
+
+                      {/* IP ID */}
+                      <td className="p-3">
                         {item.ip_id ? (
-                          // Check if IP ID is a valid address (starts with 0x and has 42 chars) or is placeholder
-                          item.ip_id.startsWith("0x") &&
-                          item.ip_id.length === 42 ? (
+                          item.ip_id.startsWith("0x") && item.ip_id.length === 42 ? (
                             <a
-                              href={`https://aeneid.storyscan.xyz/ip-asset/${item.ip_id}`}
+                              href={`https://aeneid.storyscan.xyz/address/${item.ip_id}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors cursor-pointer group/ip font-mono text-xs"
-                              title="View IP Asset on Story Protocol"
+                              className="text-blue-400 hover:text-blue-300 transition-colors font-mono truncate block"
+                              title={item.ip_id}
                             >
-                              <span className="truncate max-w-[100px]">
-                                {item.ip_id.slice(0, 8)}...
-                                {item.ip_id.slice(-6)}
-                              </span>
-                              <ExternalLink className="w-3 h-3 opacity-0 group-hover/ip:opacity-100 transition-opacity" />
+                              {item.ip_id.slice(0, 6)}...{item.ip_id.slice(-4)}
                             </a>
                           ) : (
-                            <span
-                              className="text-gray-500 text-xs font-mono"
-                              title="IP Asset not registered (NFT only)"
-                            >
-                              {item.ip_id}
+                            <span className="text-gray-500 font-mono truncate block" title={item.ip_id}>
+                              {item.ip_id.length > 20 ? `${item.ip_id.slice(0, 15)}...` : item.ip_id}
                             </span>
                           )
                         ) : (
-                          <span className="text-gray-500 text-xs">N/A</span>
+                          <span className="text-gray-500">N/A</span>
                         )}
                       </td>
-                      <td className="p-6">
-                        <div className="flex items-center gap-2">
-                          <Hash className="w-4 h-4 text-blue-400" />
-                          <div
-                            className="font-mono text-xs text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded w-fit max-w-[120px] truncate"
-                            title={item.phash || "N/A"}
-                          >
-                            {item.phash
-                              ? `${item.phash.substring(0, 12)}...`
-                              : "N/A"}
-                          </div>
-                        </div>
+
+                      {/* pHash */}
+                      <td className="p-3">
+                        <span
+                          className="font-mono text-blue-300 bg-blue-500/10 px-1.5 py-0.5 rounded truncate block"
+                          title={item.phash || "N/A"}
+                        >
+                          {item.phash ? `${item.phash.substring(0, 8)}...` : "N/A"}
+                        </span>
                       </td>
-                      <td className="p-6">
-                        <div className="flex flex-col gap-1">
+
+                      {/* TX Hashes - Compact inline */}
+                      <td className="p-3">
+                        <div className="flex flex-wrap gap-1">
                           {item.tx_hash_mint && (
-                            <div className="flex items-center gap-1">
-                              <span className="text-xs text-gray-500 w-16">
-                                Mint:
-                              </span>
-                              <a
-                                href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_mint}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-orange-400/80 hover:text-orange-400 transition-colors cursor-pointer group/mint font-mono text-xs"
-                                title="NFT Mint Transaction - Creates the NFT token"
-                              >
-                                <span className="truncate max-w-[80px]">
-                                  {formatTxHash(item.tx_hash_mint)}
-                                </span>
-                                <ExternalLink className="w-3 h-3 opacity-0 group-hover/mint:opacity-100 transition-opacity" />
-                              </a>
-                            </div>
+                            <a
+                              href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_mint}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-orange-400 hover:text-orange-300 font-mono"
+                              title="Mint TX"
+                            >
+                              M
+                            </a>
                           )}
                           {item.tx_hash_register && (
-                            <div className="flex items-center gap-1">
-                              <span className="text-xs text-gray-500 w-16">
-                                Register:
-                              </span>
-                              <a
-                                href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_register}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-blue-400/80 hover:text-blue-400 transition-colors cursor-pointer group/tx font-mono text-xs"
-                                title="IP Asset Registration - Registers NFT as IP Asset on Story Protocol"
-                              >
-                                <span className="truncate max-w-[80px]">
-                                  {formatTxHash(item.tx_hash_register)}
-                                </span>
-                                <ExternalLink className="w-3 h-3 opacity-0 group-hover/tx:opacity-100 transition-opacity" />
-                              </a>
-                            </div>
+                            <a
+                              href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_register}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-400 hover:text-blue-300 font-mono"
+                              title="Register TX"
+                            >
+                              R
+                            </a>
                           )}
                           {item.tx_hash_license && (
-                            <div className="flex items-center gap-1">
-                              <span className="text-xs text-gray-500 w-16">
-                                License:
-                              </span>
-                              <a
-                                href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_license}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-purple-400/80 hover:text-purple-400 transition-colors cursor-pointer group/license font-mono text-xs"
-                                title="License Attachment - Attaches Non-Commercial license to IP Asset"
-                              >
-                                <span className="truncate max-w-[80px]">
-                                  {formatTxHash(item.tx_hash_license)}
-                                </span>
-                                <ExternalLink className="w-3 h-3 opacity-0 group-hover/license:opacity-100 transition-opacity" />
-                              </a>
-                            </div>
+                            <a
+                              href={`https://aeneid.storyscan.xyz/tx/${item.tx_hash_license}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-purple-400 hover:text-purple-300 font-mono"
+                              title="License TX"
+                            >
+                              L
+                            </a>
                           )}
-                          {!item.tx_hash_mint &&
-                            !item.tx_hash_register &&
-                            !item.tx_hash_license && (
-                              <span className="text-gray-500 text-xs">N/A</span>
-                            )}
+                          {!item.tx_hash_mint && !item.tx_hash_register && !item.tx_hash_license && (
+                            <span className="text-gray-500">-</span>
+                          )}
                         </div>
                       </td>
-                      <td className="p-6">
+
+                      {/* License */}
+                      <td className="p-3">
                         {item.license?.status ? (
-                          <div className="flex flex-col gap-1">
-                            <span
-                              className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium w-fit ${
-                                item.license.status === "ACTIVE"
-                                  ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                                  : item.license.status === "FAILED"
-                                  ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                                  : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                          <span
+                            className={`inline-flex px-1.5 py-0.5 rounded text-xs font-medium ${item.license.status === "ACTIVE"
+                              ? "bg-green-500/20 text-green-400"
+                              : item.license.status === "FAILED"
+                                ? "bg-red-500/20 text-red-400"
+                                : "bg-gray-500/20 text-gray-400"
                               }`}
-                            >
-                              {item.license.status}
-                            </span>
-                            {item.license.type && (
-                              <span className="text-xs text-gray-500">
-                                {item.license.type}
-                              </span>
-                            )}
-                          </div>
+                          >
+                            {item.license.status === "ACTIVE" ? "✓" : item.license.status === "FAILED" ? "✗" : "-"}
+                          </span>
                         ) : (
-                          <span className="text-gray-500 text-xs">N/A</span>
+                          <span className="text-gray-500">-</span>
                         )}
                       </td>
-                      <td className="p-6 text-right">
-                        <div className="flex flex-col items-end gap-1">
-                          <div className="flex items-center gap-2 text-gray-500">
-                            <Clock className="w-3 h-3" />
-                            <span className="text-xs">
-                              {item.timestamp
-                                ? formatTimeAgo(item.timestamp)
-                                : "N/A"}
-                            </span>
-                          </div>
-                          {item.timestamp && (
-                            <span className="text-xs text-gray-600">
-                              {formatDate(item.timestamp)}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-6">
-                        <IPFSFileMenu metadataUri={item.ipfs_metadata} />
+
+                      {/* Time */}
+                      <td className="p-3 text-right">
+                        <span className="text-gray-500" title={item.timestamp ? formatDate(item.timestamp) : "N/A"}>
+                          {item.timestamp ? formatTimeAgo(item.timestamp) : "N/A"}
+                        </span>
                       </td>
                     </tr>
                   ))}

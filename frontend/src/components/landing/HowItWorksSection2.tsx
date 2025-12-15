@@ -42,7 +42,7 @@ export const HowItWorksSection2 = () => {
   // Spotlight effect for container
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
+  const [, setIsHovering] = useState(false);
 
   function handleMouseMove({
     currentTarget,
@@ -95,7 +95,8 @@ export const HowItWorksSection2 = () => {
         <div
           className="bg-white/[0.5] dark:bg-white/[0.02] border border-gray-300 dark:border-white/10 backdrop-blur-sm rounded-3xl pl-6 md:pl-8 lg:pl-12 shadow-2xl py-0 relative group/spotlight overflow-hidden cursor-pointer"
           onMouseMove={handleMouseMove}
-
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
         >
           {/* Spotlight effect */}
           <motion.div
@@ -156,10 +157,11 @@ export const HowItWorksSection2 = () => {
                   <button
                     key={index}
                     onClick={() => setActiveCardIndex(index)}
-                    className={`h-2 rounded-full transition-all ${index === activeCardIndex
+                    className={`h-2 rounded-full transition-all ${
+                      index === activeCardIndex
                         ? "bg-foreground w-8"
                         : "bg-muted-foreground/30 w-2 hover:bg-muted-foreground/50"
-                      }`}
+                    }`}
                     aria-label={`Go to step ${index + 1}`}
                   />
                 ))}

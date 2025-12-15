@@ -33,8 +33,9 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     <div
       ref={ref}
       {...rest}
-      className={`absolute top-1/2 left-1/2 rounded-xl border border-white bg-black [transform-style:preserve-3d] [will-change:transform] [backface-visibility:hidden] pointer-events-auto ${customClass ?? ""
-        } ${rest.className ?? ""}`.trim()}
+      className={`absolute top-1/2 left-1/2 rounded-xl border border-white bg-black [transform-style:preserve-3d] [will-change:transform] [backface-visibility:hidden] pointer-events-auto ${
+        customClass ?? ""
+      } ${rest.className ?? ""}`.trim()}
     />
   )
 );
@@ -89,21 +90,21 @@ const CardSwap: React.FC<CardSwapProps> = ({
   const config =
     easing === "elastic"
       ? {
-        ease: "elastic.out(0.6,0.9)",
-        durDrop: 2,
-        durMove: 2,
-        durReturn: 2,
-        promoteOverlap: 0.9,
-        returnDelay: 0.05,
-      }
+          ease: "elastic.out(0.6,0.9)",
+          durDrop: 2,
+          durMove: 2,
+          durReturn: 2,
+          promoteOverlap: 0.9,
+          returnDelay: 0.05,
+        }
       : {
-        ease: "power1.inOut",
-        durDrop: 0.8,
-        durMove: 0.8,
-        durReturn: 0.8,
-        promoteOverlap: 0.45,
-        returnDelay: 0.2,
-      };
+          ease: "power1.inOut",
+          durDrop: 0.8,
+          durMove: 0.8,
+          durReturn: 0.8,
+          promoteOverlap: 0.45,
+          returnDelay: 0.2,
+        };
 
   const childArr = useMemo(
     () => Children.toArray(children) as ReactElement<CardProps>[],
@@ -209,14 +210,12 @@ const CardSwap: React.FC<CardSwapProps> = ({
       tlRef.current?.pause();
       clearInterval(intervalRef.current);
 
-      // Get the current front card (will move to back)
+ // Move clicked card to front
+const newOrder = [
+  clickedIndex,
+  ...order.current.filter((idx) => idx !== clickedIndex),
+];
 
-
-      // Move clicked card to front, current front goes to back
-      const newOrder = [
-        clickedIndex,
-        ...order.current.filter((idx) => idx !== clickedIndex),
-      ];
 
       // Animate cards to new positions
       const tl = gsap.timeline();
@@ -302,15 +301,15 @@ const CardSwap: React.FC<CardSwapProps> = ({
   const rendered = childArr.map((child, i) =>
     isValidElement<CardProps>(child)
       ? cloneElement(child, {
-        key: i,
-        ref: refs[i],
-        style: { width, height, ...(child.props.style ?? {}) },
-        onClick: (e) => {
-          child.props.onClick?.(e as React.MouseEvent<HTMLDivElement>);
-          onCardClick?.(i);
-          bringToFrontRef.current?.(i);
-        },
-      } as CardProps & React.RefAttributes<HTMLDivElement>)
+          key: i,
+          ref: refs[i],
+          style: { width, height, ...(child.props.style ?? {}) },
+          onClick: (e) => {
+            child.props.onClick?.(e as React.MouseEvent<HTMLDivElement>);
+            onCardClick?.(i);
+            bringToFrontRef.current?.(i);
+          },
+        } as CardProps & React.RefAttributes<HTMLDivElement>)
       : child
   );
 

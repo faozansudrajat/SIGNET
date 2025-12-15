@@ -1,33 +1,44 @@
 import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider } from "wagmi";
+import { ThemeProvider } from "next-themes";
+
+import { queryClient } from "./lib/queryClient";
+import { wagmiConfig } from "./lib/wagmi";
+
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { WagmiProvider } from "wagmi";
-import { wagmiConfig } from "./lib/wagmi";
-import { ThemeProvider } from "next-themes";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { Layout } from "@/components/layout/Layout";
+import { AdminLayout } from "@/components/layout/AdminLayout";
+
+/* =======================
+   PAGES
+======================= */
 import LandingPage from "@/pages/landing";
 import DashboardHome from "@/pages/dashboard-home";
 import RegisterContent from "@/pages/register-content";
 import MyContents from "@/pages/my-contents";
-
 import VerifyContent from "@/pages/verify-content";
 import Activity from "@/pages/activity";
 import RegisterPublisher from "@/pages/register-publisher";
 import ManagePublishers from "@/pages/admin";
 import ContentReview from "@/pages/admin/content-review";
-
 import NotFound from "@/pages/not-found";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { Layout } from "@/components/layout/Layout";
-import { AdminLayout } from "@/components/layout/AdminLayout";
 
+/* =======================
+   ROUTER
+======================= */
 function Router() {
   return (
     <Switch>
+      {/* Public */}
       <Route path="/" component={LandingPage} />
+      <Route path="/verify" component={VerifyContent} />
+      <Route path="/activity" component={Activity} />
+      <Route path="/register-publisher" component={RegisterPublisher} />
 
-      {/* Protected Publisher Routes */}
+      {/* Publisher */}
       <Route path="/dashboard">
         {() => (
           <ProtectedRoute requirePublisher>
@@ -37,6 +48,7 @@ function Router() {
           </ProtectedRoute>
         )}
       </Route>
+
       <Route path="/dashboard/upload">
         {() => (
           <ProtectedRoute requirePublisher>
@@ -46,6 +58,7 @@ function Router() {
           </ProtectedRoute>
         )}
       </Route>
+
       <Route path="/dashboard/contents">
         {() => (
           <ProtectedRoute requirePublisher>
@@ -55,31 +68,8 @@ function Router() {
           </ProtectedRoute>
         )}
       </Route>
-      {/* API Usage route - Hidden */}
-      {/* <Route path="/dashboard/api">
-        {() => (
-          <ProtectedRoute requirePublisher>
-            <Layout>
-              <APIUsage />
-            </Layout>
-          </ProtectedRoute>
-        )}
-      </Route> */}
 
-      {/* Public Routes */}
-      <Route path="/verify" component={VerifyContent} />
-      <Route path="/activity" component={Activity} />
-      <Route path="/register-publisher" component={RegisterPublisher} />
-
-      {/* API Docs routes - Hidden */}
-      {/* <Route path="/docs" component={APIDocs} /> */}
-      {/* <Route path="/docs/introduction" component={APIDocs} /> */}
-      {/* <Route path="/docs/register" component={APIDocs} /> */}
-      {/* <Route path="/docs/verify" component={APIDocs} /> */}
-      {/* <Route path="/docs/contents" component={APIDocs} /> */}
-      {/* <Route path="/docs/notes" component={APIDocs} /> */}
-
-      {/* Protected Admin Routes */}
+      {/* Admin */}
       <Route path="/admin/publishers">
         {() => (
           <ProtectedRoute requireOwner>
@@ -89,6 +79,7 @@ function Router() {
           </ProtectedRoute>
         )}
       </Route>
+
       <Route path="/admin/review">
         {() => (
           <ProtectedRoute requireOwner>
@@ -98,22 +89,16 @@ function Router() {
           </ProtectedRoute>
         )}
       </Route>
-      {/* System Monitor route - Hidden */}
-      {/* <Route path="/admin/monitor">
-        {() => (
-          <ProtectedRoute requireOwner>
-            <AdminLayout>
-              <SystemMonitor />
-            </AdminLayout>
-          </ProtectedRoute>
-        )}
-      </Route> */}
 
+      {/* 404 */}
       <Route component={NotFound} />
     </Switch>
   );
 }
 
+/* =======================
+   APP
+======================= */
 function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>

@@ -15,7 +15,6 @@ import { PricingSection } from "@/components/landing/PricingSection";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { DesktopStoryProtocol } from "@/components/illustrations/desktop-story-protocol";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
-
 import { HowItWorksSection2 } from "@/components/landing/HowItWorksSection2";
 import { WhySignetSection } from "@/components/landing/WhySignetSection";
 
